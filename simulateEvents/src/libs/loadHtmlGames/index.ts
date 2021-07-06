@@ -1,0 +1,1 @@
+export { LoadHtmlGames } from "./loadHtmlGames";
