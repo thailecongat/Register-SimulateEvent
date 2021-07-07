@@ -42,4 +42,5 @@ class App extends React.Component {
   }
 }
 ```
+##Type input
 `gameSessionId: string`
