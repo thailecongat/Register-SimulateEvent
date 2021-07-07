@@ -5,19 +5,17 @@ import {
   IGameSessionEvent,
   IGameSessionEventsCreatePayload,
   IGameSessionEventsUpdatePayload,
+  IGameSessionEventsFetchPayload,
 } from "../types/dataInterface";
-import { MOCK_GAME_SESSION_ID } from "../mocks/datas";
 
-const dataCreate = {
-  gameSessionId: MOCK_GAME_SESSION_ID,
-  events: JSON.stringify([{ type: EVENT_TYPE.PING }]),
-};
 export class RegisterEvents {
   static ROOT_URL = "http://localhost:4100";
   gameSessionEvents: IGameSessionEvent[] = [];
   startTime: number = 0;
+  gameSessionId: string = "";
 
-  constructor() {
+  constructor({ gameSessionId }: IGameSessionEventsFetchPayload) {
+    this.gameSessionId = gameSessionId;
     this.initialize();
   }
 
@@ -202,7 +200,7 @@ export class RegisterEvents {
     //Update event every 5s
     const requestId = setInterval(async () => {
       await RegisterEvents.updateGameSessionEvents({
-        gameSessionId: MOCK_GAME_SESSION_ID,
+        gameSessionId: this.gameSessionId,
         events: JSON.stringify(this.gameSessionEvents),
       });
       this.setDefault();
@@ -218,7 +216,10 @@ export class RegisterEvents {
    * @returns {Promise<any>}
    */
   registerEventHtmlGame = async () => {
-    await RegisterEvents.createGameSessionEvents(dataCreate);
+    await RegisterEvents.createGameSessionEvents({
+      gameSessionId: this.gameSessionId,
+      events: JSON.stringify([{ type: EVENT_TYPE.PING }]),
+    });
     this.updateGameSessionEvents();
   };
 }

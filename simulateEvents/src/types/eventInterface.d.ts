@@ -20,11 +20,6 @@ export interface IEventGameSession {
   time?: number;
   data?: string;
 }
-
-export interface IRegisterEventsConstructor {
-  startTime: number;
-}
-
 export interface IPropSimulateEvents {
-  startTime: number;
+  gameSessionId: string;
 }

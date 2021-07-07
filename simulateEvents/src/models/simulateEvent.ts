@@ -5,13 +5,11 @@ import {
   IDataSimulate,
   IEventToSimulate,
   IGameSessionEventsFetchPayload,
-  IRegisterEventsConstructor,
 } from "../types/eventInterface";
 
 // @ts-ignore
 const onmoHtmlGame = window.onmoHtmlGame;
 export class SimulateEvent {
-  startTime: number = 0;
   isDoneSimulateEventGroup: boolean = false;
   requestFrameId: number = 0;
   startAnimationTime: number = 0;
@@ -19,12 +17,7 @@ export class SimulateEvent {
   eventsToSimulate: IEventToSimulate[] = [];
   currentEventIndex: number = 0;
 
-  constructor({ startTime }: IRegisterEventsConstructor) {
-    this.startTime = startTime;
-  }
-
   setDefault = (): void => {
-    this.startTime = 0;
     this.requestFrameId = 0;
     this.isDoneSimulateEventGroup = false;
     this.currentEventIndex = 0;
@@ -118,6 +111,12 @@ export class SimulateEvent {
       );
       this.currentEventIndex = this.currentEventIndex + 1;
     }
+
+    if (this.currentEventIndex === this.eventsToSimulate.length) {
+      this.isDoneSimulateEventGroup = true;
+    } else {
+      this.isDoneSimulateEventGroup = false;
+    }
   };
 
   onFrameAnimation = (timestamp: number): void => {
@@ -176,28 +175,6 @@ export class SimulateEvent {
   };
 
   cancelAnimationFrameRequest = () => cancelAnimationFrame(this.requestFrameId);
-
-  /**
-   * @returns {void}
-   */
-  initGameDisplayBlock = (): void => {
-    console.log("[Simulate events] - Hide the game display block");
-    const node = document.getElementById("UT_CANVAS");
-    node?.style.setProperty("maxWidth", "100vw");
-    node?.style.setProperty("maxHeight", "100vh");
-    node?.style.setProperty("display", "block");
-    node?.style.setProperty("background", "#222323");
-    node?.style.setProperty("cursor", "none");
-  };
-
-  /**
-   * @returns {void}
-   */
-  hideGameDisplayBlock = (): void => {
-    console.log("[Simulate events] - Hide the game display block");
-    const node = document.getElementById("UT_CANVAS");
-    node?.style.setProperty("display", "none");
-  };
 
   /**
    * Fetch all gameSessionEvent with gameSession

@@ -7,39 +7,43 @@ import {
 } from "./types/eventInterface";
 
 // @ts-ignore
-// const onmoHtmlGame = window.onmoHtmlGame;
+const onmoHtmlGame = window.onmoHtmlGame;
 
 export const SimulateEventComponet = (props: IPropSimulateEvents) => {
-  const { startTime } = props;
+  const { gameSessionId } = props;
   const [simulateEvents, setSimulateEvents] = React.useState<SimulateEvent>();
   const [eventsToSimulate, setEventsToSimulate] = React.useState<
     IEventToSimulate[]
   >([]);
 
   React.useEffect(() => {
-    const simulateEvents = new SimulateEvent({
-      startTime,
-    });
+    const simulateEvents = new SimulateEvent();
     setSimulateEvents(simulateEvents);
-  }, [startTime]);
-
-  React.useEffect(() => {
-    if (!simulateEvents) return;
-    simulateEvents.initGameDisplayBlock();
-  }, [simulateEvents]);
+  }, []);
 
   const fetchGameSessionEvents = async () => {
     try {
-      const response = await SimulateEvent.fetch({ gameSessionId: "abc" });
+      const response = await SimulateEvent.fetch({
+        gameSessionId: gameSessionId,
+      });
       const event = JSON.parse(response.data.events);
-      if (event.length === eventsToSimulate.length) {
+      if (
+        event.length === eventsToSimulate.length &&
+        simulateEvents?.isDoneSimulateEventGroup
+      ) {
         console.log("Lost Internet");
-        // onmoHtmlGame?.pause();
+        const timeout = setTimeout(() => {
+          onmoHtmlGame?.pause();
+          clearTimeout(timeout);
+        }, 3000);
       } else {
         console.log("Conected");
-        // onmoHtmlGame?.resume();
+        const timeout = setTimeout(() => {
+          onmoHtmlGame?.resume();
+          setEventsToSimulate(event);
+          clearTimeout(timeout);
+        }, 3000);
       }
-      setEventsToSimulate(event);
     } catch (e) {
       console.log(e);
     }

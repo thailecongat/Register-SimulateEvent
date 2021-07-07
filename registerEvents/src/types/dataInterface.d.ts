@@ -29,10 +29,11 @@ export interface IGameSessionEventsData {
   events: string;
 }
 
-interface IMouseEvent {
+export interface IMouseEvent {
   type: string;
   clientX: number;
   clientY: number;
   screenX: number;
   screenY: number;
 }
+
