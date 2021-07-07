@@ -9,7 +9,7 @@ import { RegisterEvents } from "Register-SimulateEvent";
 function App() {
  const [registerEvent, SetRegisterEvent] = useState<RegisterEvents>();
   useEffect(() => {
-    const registerEvent = new RegisterEvents();
+    const registerEvent = new RegisterEvents({gameSessionId: gameSessionId});
     SetRegisterEvent(registerEvent);
   }, []);
   
