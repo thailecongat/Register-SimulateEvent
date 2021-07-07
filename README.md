@@ -32,7 +32,6 @@ You can SimulateEvent as follows:
 
 ```
 import { SimulateEventComponet } from "Register-SimulateEvent";
-import { StreamingView } from 'streaming-view-sdk';
 
 class App extends React.Component {
   render() {
