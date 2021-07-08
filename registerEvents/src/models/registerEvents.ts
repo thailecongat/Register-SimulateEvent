@@ -8,11 +8,15 @@ import {
   IGameSessionEventsFetchPayload,
 } from "../types/dataInterface";
 
+// @ts-ignore
+const onmoHtmlGame = window.onmoHtmlGame as any;
+
 export class RegisterEvents {
   static ROOT_URL = "http://localhost:4100";
   gameSessionEvents: IGameSessionEvent[] = [];
   startTime: number = 0;
   gameSessionId: string = "";
+  isConect: boolean = true;
 
   constructor({ gameSessionId }: IGameSessionEventsFetchPayload) {
     this.gameSessionId = gameSessionId;
@@ -195,31 +199,46 @@ export class RegisterEvents {
    * @returns {Promise<any>}
    */
   updateGameSessionEvents = () => {
+    window.addEventListener("online", () => {
+      this.startTime = Date.now();
+      this.isConect = true;
+      onmoHtmlGame?.resume();
+    });
+    window.addEventListener("offline", () => {
+      this.isConect = false;
+      onmoHtmlGame?.pause();
+    });
     this.register();
-
     //Update event every 5s
     const requestId = setInterval(async () => {
       await RegisterEvents.updateGameSessionEvents({
         gameSessionId: this.gameSessionId,
         events: JSON.stringify(this.gameSessionEvents),
       });
-      this.setDefault();
+      this?.isConect && this.setDefault();
     }, 5000);
-
     return () => {
       clearInterval(requestId);
     };
   };
 
+  // Testing lost internet
+  // updateGameSessionEvents = async () => {
+  //   await RegisterEvents.updateGameSessionEvents({
+  //     gameSessionId: this.gameSessionId,
+  //     events: JSON.stringify(this.gameSessionEvents),
+  //   });
+  //   this.setDefault();
+  // };
+
   /**
    * Create then update event
    * @returns {Promise<any>}
    */
-  registerEventHtmlGame = async () => {
+  createRegisterEventHtmlGame = async () => {
     await RegisterEvents.createGameSessionEvents({
       gameSessionId: this.gameSessionId,
       events: JSON.stringify([{ type: EVENT_TYPE.PING }]),
     });
-    this.updateGameSessionEvents();
   };
 }

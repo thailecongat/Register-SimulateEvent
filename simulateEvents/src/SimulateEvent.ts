@@ -27,6 +27,7 @@ export const SimulateEventComponet = (props: IPropSimulateEvents) => {
         gameSessionId: gameSessionId,
       });
       const event = JSON.parse(response.data.events);
+      setEventsToSimulate(event);
       if (
         event.length === eventsToSimulate.length &&
         simulateEvents?.isDoneSimulateEventGroup
@@ -34,13 +35,18 @@ export const SimulateEventComponet = (props: IPropSimulateEvents) => {
         console.log("Lost Internet");
         const timeout = setTimeout(() => {
           onmoHtmlGame?.pause();
+          simulateEvents.isPause = true;
           clearTimeout(timeout);
+          //TODO
+          //check lost internet if > 1 min
+          //send final score and kill the docker
         }, 3000);
       } else {
         console.log("Conected");
+        if (!simulateEvents) return;
         const timeout = setTimeout(() => {
           onmoHtmlGame?.resume();
-          setEventsToSimulate(event);
+          simulateEvents.isPause = false;
           clearTimeout(timeout);
         }, 3000);
       }

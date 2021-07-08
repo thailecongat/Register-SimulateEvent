@@ -11,6 +11,7 @@ import {
 const onmoHtmlGame = window.onmoHtmlGame;
 export class SimulateEvent {
   isDoneSimulateEventGroup: boolean = false;
+  isPause: boolean = false;
   requestFrameId: number = 0;
   startAnimationTime: number = 0;
   canvas = document.createElement("canvas");
@@ -91,7 +92,7 @@ export class SimulateEvent {
     const event = this.eventsToSimulate[this.currentEventIndex];
     const node = document.getElementById("UT_CANVAS");
     if (!node || !event) return;
-
+    if (this.isPause) return;
     if (event.type === EventTypes.PAUSE) {
       console.log("PAUSE");
       onmoHtmlGame?.pause();
@@ -102,6 +103,12 @@ export class SimulateEvent {
       console.log("RESUME");
       onmoHtmlGame?.resume();
       this.currentEventIndex = this.currentEventIndex + 1;
+    }
+
+    if (event.type === EventTypes.PLAYER_LFET) {
+      console.log("PLAYER_LFET");
+      //TODO
+      //send final score and kill the docker
     }
 
     if (event.type === EventTypes.INPUT) {
@@ -131,7 +138,7 @@ export class SimulateEvent {
     if (this.currentEventIndex >= 1) {
       const prev = this.eventsToSimulate[this.currentEventIndex - 1]?.time || 0;
       const now = this.eventsToSimulate[this.currentEventIndex]?.time;
-      duration = now - prev;
+      duration = now - prev >= 0 ? now - prev : now;
     }
 
     if (duration !== null && elapsedMs < duration) {
